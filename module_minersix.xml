@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_minersix" default="compile.module.minersix">
+  <dirname property="module.minersix.basedir" file="${ant.file.module_minersix}"/>
+  
+  <property name="module.jdk.home.minersix" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.minersix" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.minersix" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.minersix" value="-encoding UTF-8 -source 11 -target 11 ${compiler.args}"/>
+  
+  <property name="minersix.output.dir" value="${module.minersix.basedir}/out/production/MinerSix"/>
+  <property name="minersix.testoutput.dir" value="${module.minersix.basedir}/out/test/MinerSix"/>
+  
+  <path id="minersix.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="minersix.module.production.classpath">
+    <path refid="${module.jdk.classpath.minersix}"/>
+  </path>
+  
+  <path id="minersix.runtime.production.module.classpath">
+    <pathelement location="${minersix.output.dir}"/>
+  </path>
+  
+  <path id="minersix.module.classpath">
+    <path refid="${module.jdk.classpath.minersix}"/>
+    <pathelement location="${minersix.output.dir}"/>
+  </path>
+  
+  <path id="minersix.runtime.module.classpath">
+    <pathelement location="${minersix.testoutput.dir}"/>
+    <pathelement location="${minersix.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.minersix">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.minersix">
+    <patternset refid="excluded.from.module.minersix"/>
+  </patternset>
+  
+  <path id="minersix.module.sourcepath">
+    <dirset dir="${module.minersix.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.minersix" depends="compile.module.minersix.production,compile.module.minersix.tests" description="Compile module MinerSix"/>
+  
+  <target name="compile.module.minersix.production" depends="register.custom.compilers" description="Compile module MinerSix; production classes">
+    <mkdir dir="${minersix.output.dir}"/>
+    <javac2 destdir="${minersix.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.minersix}/javac">
+      <compilerarg line="${compiler.args.minersix}"/>
+      <bootclasspath refid="minersix.module.bootclasspath"/>
+      <classpath refid="minersix.module.production.classpath"/>
+      <src refid="minersix.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.minersix"/>
+    </javac2>
+    
+    <copy todir="${minersix.output.dir}">
+      <fileset dir="${module.minersix.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.minersix.tests" depends="register.custom.compilers,compile.module.minersix.production" description="compile module MinerSix; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.minersix" description="cleanup module">
+    <delete dir="${minersix.output.dir}"/>
+    <delete dir="${minersix.testoutput.dir}"/>
+  </target>
+</project>
